@@ -198,7 +198,7 @@ def create_slurm(name, duration, delay, command, nprocess=1, mem=15000,
     modules = MODULES if modules is None else modules
     if not isinstance(modules, (tuple, list)):
         modules = [modules]
-    modules = "\n".join(["moduel load %s" % i for i in modules])
+    modules = "\n".join(["module load %s" % i for i in modules])
 
     scripts = SCRIPTS if scripts is None else scripts
     if not isinstance(scripts, (tuple, list)):
