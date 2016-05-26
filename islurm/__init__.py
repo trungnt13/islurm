@@ -104,6 +104,7 @@ def run_slurm(slurm):
     if os.path.exists(slurm) and os.path.isfile(slurm):
         try:
             os.system('cat ' + slurm)
+            print()
             os.system('sbatch ' + slurm)
         except:
             print('Failed to execute slurm!')
@@ -112,6 +113,7 @@ def run_slurm(slurm):
         f = open(name, 'w'); f.write(slurm); f.close()
         try:
             os.system('cat ' + name)
+            print()
             os.system('sbatch ' + name)
         except:
             print('Failed to execute slurm!')
@@ -211,9 +213,8 @@ def create_slurm(name, duration, delay, command, nprocess=1, mem=15000,
         elif duration > 14 * 24 * 60:
             arch = 'gpulong'
         maximum_gpu_per_node = 2
-        for i in options:
-            if 'k80' in i:
-                maximum_gpu_per_node = 4
+        if 'k80' in options:
+            maximum_gpu_per_node = 4
         n_node = int(math.ceil(nprocess / maximum_gpu_per_node))
         if nprocess > maximum_gpu_per_node:
             nprocess = maximum_gpu_per_node
