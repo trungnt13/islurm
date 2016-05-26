@@ -1,0 +1,1 @@
+Fast libary for lauching SLURM jobs
