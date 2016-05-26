@@ -4,10 +4,11 @@ setup(
     name='islurm',
     version='0.1.0',
     author='Nick Artin',
-    packages=[''],
-    scripts=['scripts/platoon-launcher'],
-    url='https://github.com/mila-udem/platoon/',
+    packages=['islurm'],
+    scripts=['scripts/pyslurm'],
+    url='https://github.com/trungnt13/islurm',
     license='MIT',
-    description='Launching task and interactive task for slurm',
+    description='Launching SLURM jobs',
     long_description=open('README.rst').read(),
+    install_requires=['pyyaml']
 )
