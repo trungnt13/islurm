@@ -5,7 +5,7 @@ setup(
     version='0.1.0',
     author='Nick Artin',
     packages=['pyslurm'],
-    scripts=['scripts/pyslurm'],
+    scripts=['scripts/slurm'],
     url='https://github.com/trungnt13/pyslurm',
     license='MIT',
     description='Launching SLURM jobs',
