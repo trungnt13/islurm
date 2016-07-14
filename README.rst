@@ -1,1 +1,1 @@
-Simple libary for lauching SLURM jobs
+Simple libary for lauching SLURM jobs using python

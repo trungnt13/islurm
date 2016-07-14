@@ -3,7 +3,7 @@
 
 import sys
 import argparse
-import islurm
+import pyslurm
 
 
 # ======================================================================
@@ -16,7 +16,7 @@ def slurm_parser():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=True)
     # ====== SLURM parser ====== #
-    parser.add_argument('-n', action='store', type=str, default='AIgenJOB',
+    parser.add_argument('-t', action='store', type=str, default='AIgenJOB',
             metavar='str',
             help='Title for SLURM job, default: AIgenJOB')
     parser.add_argument('-d', action='store', type=int, required=True,
@@ -28,7 +28,7 @@ def slurm_parser():
     parser.add_argument('-m', action='store', type=int, default = 15000,
             metavar='int',
             help='memory for the job, default: 15000 MB')
-    parser.add_argument('-p', action='store', type=int, default = 1,
+    parser.add_argument('-n', action='store', type=int, default = 1,
             metavar='int',
             help='Number of GPU, default: 1')
     parser.add_argument('-f', action='append', default=[], required=False, nargs='+',
@@ -37,6 +37,9 @@ def slurm_parser():
     parser.add_argument('--machine', action='store', type=str, default='gpu',
             metavar='str',
             help='Machine type: gpu, serial, hugemem; default: gpu')
+    parser.add_argument('--constraint', action='store', type=str, default='k80',
+            metavar='str',
+            help='Constraint using Tesla k40 or Tesla k80')
     parser.add_argument('--i', action='store_true',
             help='enable interaction jobs')
 
@@ -54,19 +57,20 @@ if __name__ == '__main__':
             if len(results.f) == 0:
                 raise Exception('You must specify list of scripts with -f option')
             command = ['python ' + ' '.join(i) for i in results.f]
-            slurm_text = islurm.create_slurm(name=results.n, duration=results.d,
+            slurm_text = pyslurm.create_slurm(name=results.t, duration=results.d,
                                              delay=results.w, command=command,
-                                             nprocess=results.p, mem=results.m,
+                                             nprocess=results.n, mem=results.m,
                                              machine=results.machine)
-            islurm.run_slurm(slurm_text)
-        else:
+            pyslurm.run_slurm(slurm_text)
+        else:  # interactive mode
             if results.machine != 'gpu':
                 raise Exception('Interactive job only support gpu')
-            islurm.irun(d=results.d, n=results.p, mem=results.m)
+            pyslurm.irun(d=results.d, n=results.n, mem=results.m,
+                         constraint=results.constraint)
     else:
         parser.print_help()
         print("\n")
-        print("You can define configure for SLURM jobs at: ~/.islurm")
+        print("You can define configure for SLURM jobs at: ~/.pyslurm")
         print(
 """
 modules: [cmake/3.3.2, cuda/7.5, gcc/4.9.1, git, openblas]

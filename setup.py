@@ -1,12 +1,12 @@
 from distutils.core import setup
 
 setup(
-    name='islurm',
+    name='pyslurm',
     version='0.1.0',
     author='Nick Artin',
-    packages=['islurm'],
+    packages=['pyslurm'],
     scripts=['scripts/pyslurm'],
-    url='https://github.com/trungnt13/islurm',
+    url='https://github.com/trungnt13/pyslurm',
     license='MIT',
     description='Launching SLURM jobs',
     long_description=open('README.rst').read(),
