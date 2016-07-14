@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+import argparse
+import pyslurm
+
+
+# ======================================================================
+# model
+# ======================================================================
+def slurm_parser():
+    parser = argparse.ArgumentParser(
+        description='Science the sh*t out of SLURM!',
+        version='0.1',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=True)
+    # ====== SLURM parser ====== #
+    parser.add_argument('-t', action='store', type=str, default='AIgenJOB',
+            metavar='str',
+            help='Title for SLURM job, default: AIgenJOB')
+    parser.add_argument('-d', action='store', type=int, required=True,
+            metavar='int',
+            help='Duration of running task in minute')
+    parser.add_argument('-w', action='store', type=int, default=0,
+            metavar='int',
+            help='Delay, run the task after minutes, default: 0')
+    parser.add_argument('-m', action='store', type=int, default = 15000,
+            metavar='int',
+            help='memory for the job, default: 15000 MB')
+    parser.add_argument('-n', action='store', type=int, default = 1,
+            metavar='int',
+            help='Number of GPU, default: 1')
+    parser.add_argument('-f', action='append', default=[], required=False, nargs='+',
+            metavar='list',
+            help='path to python script & its arguments (e.g. script.py arg1 arg2 ...)')
+    parser.add_argument('--machine', action='store', type=str, default='gpu',
+            metavar='str',
+            help='Machine type: gpu, serial, hugemem; default: gpu')
+    parser.add_argument('--constraint', action='store', type=str, default='k80',
+            metavar='str',
+            help='Constraint using Tesla k40 or Tesla k80')
+    parser.add_argument('--i', action='store_true',
+            help='enable interaction jobs')
+
+    return parser
+
+# ======================================================================
+# Main
+# ======================================================================
+# python runner.py -t MFCC -d 30 -p cpu -m 16000 -np 8 -f feature_extract.py set01.dat 10 20 10 2500 8
+if __name__ == '__main__':
+    parser = slurm_parser()
+    if len(sys.argv) > 1:
+        results = parser.parse_args()
+        if not results.i:
+            if len(results.f) == 0:
+                raise Exception('You must specify list of scripts with -f option')
+            command = ['python ' + ' '.join(i) for i in results.f]
+            slurm_text = pyslurm.create_slurm(name=results.t, duration=results.d,
+                                             delay=results.w, command=command,
+                                             nprocess=results.n, mem=results.m,
+                                             machine=results.machine)
+            pyslurm.run_slurm(slurm_text)
+        else:  # interactive mode
+            if results.machine != 'gpu':
+                raise Exception('Interactive job only support gpu')
+            pyslurm.irun(d=results.d, n=results.n, mem=results.m,
+                         constraint=results.constraint)
+    else:
+        parser.print_help()
+        print("\n")
+        print("You can define configure for SLURM jobs at: ~/.pyslurm")
+        print(
+"""
+modules: [cmake/3.3.2, cuda/7.5, gcc/4.9.1, git, openblas]
+scripts: source activate env
+email: email@gmail.com
+log: /tmp
+options: [--exclusive, --constraint=k40]""")
