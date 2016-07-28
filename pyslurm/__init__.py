@@ -77,7 +77,7 @@ def irun(d=30, n=1, mem=15000, constraint='k40'):
         arch = 'gputest'
     elif d > 4320:
         arch = 'gpulong'
-        mem = int(min(mem, 20000))
+        mem = int(max(mem, 20000))
 
     maximum_gpu_per_node = 2
     if constraint == 'k80':
