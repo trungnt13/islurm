@@ -71,7 +71,19 @@ module purge
 # Interactive
 # ======================================================================
 #srun -N 1 -p gputest -t 15 --gres=gpu:2 --exclusive --pty $SHELL -l
-def irun(d=30, n=1, mem=15000, constraint='k40'):
+def irun(d=30, n=1, mem=15000, constraint='k40', w=0):
+    """
+    d: minute
+        duration
+    n: int
+        number of GPUs
+    mem: MB
+        MegaBytes of memory
+    constraint: str
+        "k40" or "k80"
+    w: minute
+        waiting time in minute
+    """
     arch = 'gpu'
     if d <= 15:
         arch = 'gputest'
@@ -87,8 +99,8 @@ def irun(d=30, n=1, mem=15000, constraint='k40'):
         n = maximum_gpu_per_node
 
     # options = ' '.join([str(i) for i in OPTIONS])
-    command = 'srun -N %d -p %s -t %d --gres=gpu:%d --mem=%d --constraint=%s --pty $SHELL -l' % \
-    (n_node, arch, d, n, mem, constraint)
+    command = 'srun -N %d -p %s -t %d --gres=gpu:%d --mem=%d --constraint=%s --begin=now+%dminute --pty $SHELL -l' % \
+    (n_node, arch, d, n, mem, constraint, w)
     try:
         print(command)
         os.system(command)

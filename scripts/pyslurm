@@ -66,7 +66,7 @@ if __name__ == '__main__':
             if results.machine != 'gpu':
                 raise Exception('Interactive job only support gpu')
             pyslurm.irun(d=results.d, n=results.n, mem=results.m,
-                         constraint=results.constraint)
+                         constraint=results.constraint, w=results.w)
     else:
         parser.print_help()
         print("\n")
